@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-const Sidebar = ({ items, title, footer }) => {
+const Sidebar = ({ items, title }) => {
 	return (
 		<aside className="glass-card w-full rounded-2xl p-5 shadow-soft">
 			<h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
@@ -23,7 +23,6 @@ const Sidebar = ({ items, title, footer }) => {
 					</NavLink>
 				))}
 			</nav>
-			{footer ? <div className="mt-6">{footer}</div> : null}
 		</aside>
 	);
 };
