@@ -25,6 +25,18 @@ const approveSeller = asyncHandler(async (req, res) => {
 	res.json({ message: "Seller approved" });
 });
 
+const approveUser = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.params.id);
+	if (!user || user.role !== "user") {
+		res.status(404);
+		throw new Error("User not found");
+	}
+
+	user.userApproved = true;
+	await user.save();
+	res.json({ message: "User approved" });
+});
+
 const blockUser = asyncHandler(async (req, res) => {
 	const user = await User.findById(req.params.id);
 	if (!user) {
@@ -61,6 +73,7 @@ module.exports = {
 	getUsers,
 	getSellers,
 	approveSeller,
+	approveUser,
 	blockUser,
 	getAllProducts,
 	getAllOrders,

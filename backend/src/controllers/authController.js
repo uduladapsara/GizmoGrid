@@ -23,6 +23,7 @@ const registerUser = asyncHandler(async (req, res) => {
 		password,
 		role: safeRole,
 		sellerApproved: safeRole === "seller" ? false : true,
+		userApproved: safeRole === "user" ? true : false,
 	});
 
 	res.status(201).json({
@@ -51,6 +52,11 @@ const loginUser = asyncHandler(async (req, res) => {
 	if (user.role === "seller" && !user.sellerApproved) {
 		res.status(403);
 		throw new Error("Seller approval pending");
+	}
+
+	if (user.role === "user" && !user.userApproved) {
+		res.status(403);
+		throw new Error("User approval pending");
 	}
 
 	const matches = await user.matchPassword(password);

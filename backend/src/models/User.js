@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
 		phone: { type: String, default: "" },
 		isBlocked: { type: Boolean, default: false },
 		sellerApproved: { type: Boolean, default: false },
+		userApproved: { type: Boolean, default: true },
 	},
 	{ timestamps: true }
 );

@@ -32,6 +32,9 @@ const createOrder = asyncHandler(async (req, res) => {
 		paymentProvider: paymentProvider || "",
 	});
 
+	// Clear cart after order
+	await Cart.findOneAndUpdate({ user: req.user._id }, { items: [] });
+
 	res.status(201).json(order);
 });
 
@@ -58,8 +61,38 @@ const getOrderById = asyncHandler(async (req, res) => {
 	res.json(order);
 });
 
+const updateOrderStatus = asyncHandler(async (req, res) => {
+	const order = await Order.findById(req.params.id).populate("items.product", "seller");
+	if (!order) {
+		res.status(404);
+		throw new Error("Order not found");
+	}
+
+	// Sellers can only update orders that contain their products
+	if (req.user.role === "seller") {
+		const hasSellerProduct = order.items.some(
+			(item) =>
+				item.product &&
+				item.product.seller &&
+				item.product.seller.toString() === req.user._id.toString()
+		);
+		if (!hasSellerProduct) {
+			res.status(403);
+			throw new Error("Access denied");
+		}
+	}
+
+	const { deliveryStatus, paymentStatus } = req.body;
+	if (deliveryStatus) order.deliveryStatus = deliveryStatus;
+	if (paymentStatus) order.paymentStatus = paymentStatus;
+
+	const updated = await order.save();
+	res.json(updated);
+});
+
 module.exports = {
 	createOrder,
 	getMyOrders,
 	getOrderById,
+	updateOrderStatus,
 };
